@@ -1,12 +1,12 @@
-using Dominio.Entidades;
+using Produto.Dominio.Entidades;
 
-namespace Dominio.Interfaces;
+namespace Produto.Dominio.Interfaces;
 
 public interface IProdutoRepositoirio
 {
-    Task AdicionarProduto(Produto produto);
-    Task AtualizarProduto(Produto produto);
+    Task AdicionarProduto(Produtos produto);
+    Task AtualizarProduto(Produtos produto);
     Task DeletarProduto(int id);
-    Task<Produto> ObterProduto(int id);
-    Task<List<Produto>> ListarProdutos();
+    Task<Produtos> ObterProduto(int id);
+    Task<List<Produtos>> ListarProdutos();
 }
