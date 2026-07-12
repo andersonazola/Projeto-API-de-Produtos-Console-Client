@@ -1,8 +1,8 @@
 using Produto.Dominio.Entidades;
 
-namespace Produto.Dominio.Interfaces;
+namespace Produto.Aplicacao;
 
-public interface IProdutoRepositorio
+public interface IProdutoAplicacao
 {
     Task AdicionarProduto(Produtos produto);
     Task AtualizarProduto(Produtos produto);

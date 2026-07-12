@@ -8,7 +8,7 @@ public class Produtos
     public int Quantidade { get; private set; }
 
 
-    public Produtos(string nome, decimal preco, int quantidade)
+    public Produtos(decimal preco, string nome, int quantidade)
     {
         Validar(preco, quantidade, nome);
         Nome = nome;
@@ -29,6 +29,17 @@ public class Produtos
 
         if (string.IsNullOrWhiteSpace(nome))
             throw new ArgumentException("Entrada inválida");
+
+    }
+
+    public void AtualizarDados(decimal preco, int quantidade, string nome)
+    {
+        Validar(preco, quantidade, nome);
+        Nome = nome;
+        Preco = preco;
+        Quantidade = quantidade;
+
+
 
     }
 

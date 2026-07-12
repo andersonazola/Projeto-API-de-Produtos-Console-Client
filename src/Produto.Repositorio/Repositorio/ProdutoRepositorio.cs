@@ -4,10 +4,12 @@ using Produto.Repositorio.Context;
 using Produto.Dominio.Entidades;
 using Dapper;
 using System.Data;
-using Microsoft.EntityFrameworkCore.Storage;
+
+namespace Produto.Repositorio.Repositorio;
 
 
-public class ProdutoRepositorio : BaseRepositorio, IProdutoRepositoirio
+
+public class ProdutoRepositorio : BaseRepositorio, IProdutoRepositorio
 {
     private readonly IDbConnection _connection;
     public ProdutoRepositorio(ProdutoContext context) : base(context)
@@ -29,10 +31,7 @@ public class ProdutoRepositorio : BaseRepositorio, IProdutoRepositoirio
 
     public async Task DeletarProduto(int id)
     {
-        var produto = await ObterProduto(id);
-        if (produto == null)
-            throw new ArgumentException("Id não encontrado");
-        _contexto.Remove(produto);
+        _contexto.Remove(id);
         await _contexto.SaveChangesAsync();
     }
 
