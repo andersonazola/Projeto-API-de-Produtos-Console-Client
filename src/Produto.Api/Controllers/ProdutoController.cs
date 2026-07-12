@@ -39,7 +39,7 @@ public class ProdutoController : ControllerBase
     {
         try
         {
-            var produtoDominio = _produtoAplicacao.ListarProdutos();
+            var produtoDominio =  await _produtoAplicacao.ListarProdutos();
             return Ok(produtoDominio);
         }
         catch (Exception ex)
@@ -63,7 +63,7 @@ public class ProdutoController : ControllerBase
 
             };
 
-            var produtoId = _produtoAplicacao.AdicionarProduto(produtoDominio);
+            var produtoId =  _produtoAplicacao.AdicionarProduto(produtoDominio);
             return Ok(produtoId);
         }
         catch (Exception ex)
@@ -84,7 +84,7 @@ public class ProdutoController : ControllerBase
                 Quantidade = produtoAtualizar.Quantidade,
                 Nome = produtoAtualizar.Nome,
             };
-            var produtoId = _produtoAplicacao.AtualizarProduto(produtoDominio);
+            var produtoId =  _produtoAplicacao.AtualizarProduto(produtoDominio);
             return Ok(produtoId);
         }
 
@@ -96,7 +96,7 @@ public class ProdutoController : ControllerBase
 
 
     [HttpDelete]
-    [Route("Deletar")]
+    [Route("Deletar/{id}")]
 
     public async Task<ActionResult> Deletar([FromRoute] int id)
     {
@@ -104,7 +104,7 @@ public class ProdutoController : ControllerBase
         {
             var produtoDominio = await _produtoAplicacao.ObterProduto(id);
 
-            await _produtoAplicacao.DeletarProduto(id);
+            await _produtoAplicacao.DeletarProduto(produtoDominio.ProdutoId);
             return Ok();
         }
         catch (Exception ex)

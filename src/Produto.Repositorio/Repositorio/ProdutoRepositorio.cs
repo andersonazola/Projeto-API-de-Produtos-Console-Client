@@ -31,8 +31,13 @@ public class ProdutoRepositorio : BaseRepositorio, IProdutoRepositorio
 
     public async Task DeletarProduto(int id)
     {
-        _contexto.Remove(id);
-        await _contexto.SaveChangesAsync();
+        var produto = await _contexto.Produtos.FindAsync(id);
+        if (produto != null)
+        {
+            _contexto.Remove(produto);
+            await _contexto.SaveChangesAsync();
+        }
+
     }
 
     public async Task<List<Produtos>> ListarProdutos()
@@ -45,7 +50,7 @@ public class ProdutoRepositorio : BaseRepositorio, IProdutoRepositorio
 
         string stringDeConexao = _contexto.Database.GetDbConnection().ConnectionString;
         using var connection = new Microsoft.Data.Sqlite.SqliteConnection(stringDeConexao);
-        var resultado =  await connection.QueryAsync<Produtos>(sql);
+        var resultado = await connection.QueryAsync<Produtos>(sql);
         return resultado.ToList(); // Transformei o resultado em List para atender ao retorno do método, pois consulta query multipla em dapper sempre retorna enumerable.
     }
 
@@ -56,7 +61,7 @@ public class ProdutoRepositorio : BaseRepositorio, IProdutoRepositorio
         const string sql = @"
         SELECT * 
         FROM Produtos
-        WHERE ProdutoId = @ProdutoID";
+        WHERE ProdutoId = @ProdutoId";
 
         string stringDeConexao = _contexto.Database.GetDbConnection().ConnectionString;
         using var connection = new Microsoft.Data.Sqlite.SqliteConnection(stringDeConexao);
