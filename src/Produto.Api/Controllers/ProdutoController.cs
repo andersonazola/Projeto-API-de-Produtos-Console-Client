@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Produto.Aplicacao;
 using Produto.Dominio.Entidades;
 using Produto.Api.Models.Requisicao;
+using Produto.Api.Models.Resposta;
 
 namespace Produto.Api;
 
@@ -17,6 +18,8 @@ public class ProdutoController : ControllerBase
         _produtoAplicacao = produtoAplicacao;
     }
 
+    #region  Métodos Get
+
     [HttpGet]
     [Route("obter/{produtoId}")]
     public async Task<ActionResult> Obter([FromRoute] int produtoId)
@@ -24,7 +27,18 @@ public class ProdutoController : ControllerBase
         try
         {
             var produtoDominio = await _produtoAplicacao.ObterProduto(produtoId);
-            return Ok(produtoDominio);
+
+            if (produtoDominio == null)
+                return NotFound("Produto não encontrado. ");
+
+            var resposta = new ProdutoResposta() // Transforma o Dominio em um DTO de resposta, usando classe ProdutoResposta
+            {
+                ProdutoId = produtoDominio.ProdutoId,
+                Nome = produtoDominio.Nome,
+                Preco = produtoDominio.Preco,
+                Quantidade = produtoDominio.Quantidade
+            };
+            return Ok(resposta);
         }
         catch (Exception ex)
         {
@@ -39,8 +53,20 @@ public class ProdutoController : ControllerBase
     {
         try
         {
-            var produtoDominio =  await _produtoAplicacao.ListarProdutos();
-            return Ok(produtoDominio);
+            var listarProdutoDominio = await _produtoAplicacao.ListarProdutos();
+
+            // MAPEAMENTO DE LISTA: Converti cada item da lista em um ProdutoResposta
+            // Usie o .Select do LINQ para fazer isso de forma rápida e limpa
+            var listarResposta = listarProdutoDominio.Select(produto => new ProdutoResposta()
+            {
+                ProdutoId = produto.ProdutoId,
+                Nome = produto.Nome,
+                Preco = produto.Preco,
+                Quantidade = produto.Quantidade
+            }).ToList();
+
+
+            return Ok(listarResposta);
         }
         catch (Exception ex)
         {
@@ -48,7 +74,10 @@ public class ProdutoController : ControllerBase
         }
     }
 
+    #endregion
 
+
+    #region  Método Post
     [HttpPost]
     [Route("Adicionar")]
     public async Task<ActionResult> Adicionar([FromBody] ProdutoCriar produtoCriar)
@@ -63,7 +92,7 @@ public class ProdutoController : ControllerBase
 
             };
 
-            var produtoId =  _produtoAplicacao.AdicionarProduto(produtoDominio);
+            var produtoId = _produtoAplicacao.AdicionarProduto(produtoDominio);
             return Ok(produtoId);
         }
         catch (Exception ex)
@@ -71,6 +100,12 @@ public class ProdutoController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    #endregion
+
+
+
+    #region  Método Put
 
     [HttpPut]
     [Route("Atualizar")]
@@ -80,11 +115,12 @@ public class ProdutoController : ControllerBase
         {
             var produtoDominio = new Produtos()
             {
+                ProdutoId = produtoAtualizar.ProdutoId,
                 Preco = produtoAtualizar.Preco,
                 Quantidade = produtoAtualizar.Quantidade,
                 Nome = produtoAtualizar.Nome,
             };
-            var produtoId =  _produtoAplicacao.AtualizarProduto(produtoDominio);
+            var produtoId = _produtoAplicacao.AtualizarProduto(produtoDominio);
             return Ok(produtoId);
         }
 
@@ -94,6 +130,10 @@ public class ProdutoController : ControllerBase
         }
     }
 
+    #endregion
+
+
+    #region  Método Delete
 
     [HttpDelete]
     [Route("Deletar/{id}")]
@@ -113,5 +153,5 @@ public class ProdutoController : ControllerBase
         }
     }
 
-
+    #endregion
 }
